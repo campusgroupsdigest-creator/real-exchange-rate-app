@@ -1,4 +1,5 @@
 # real-exchange-rate-app
+
 1. Upload app.py and requirements.txt to the root of your GitHub repository.
    Replace the earlier backend-only app.py with this completed version.
 2. Edit your existing README.md. Replace the app-specific description and
@@ -13,7 +14,7 @@ BEGIN README CONTENT
 
 # RER Explorer — Real Exchange Rate App
 
-A Streamlit app that calculates monthly bilateral real exchange rates using IMF price indexes and exchange rates. The default comparison is United States (Country 1) and United Kingdom (Country 2).
+A Streamlit app that calculates monthly bilateral real exchange rates using IMF price indexes and exchange rates. The default comparison is United Kingdom (Country 1) and United States (Country 2).
 
 ## Features
 
@@ -41,7 +42,7 @@ RER* = arithmetic average of RER(t) over valid selected months
 Real Index(t) = 100 × RER(t) / RER*
 ```
 
-S(t) is Country 2 currency units per one unit of Country 1 currency. For USA → UK, this is pounds sterling per US dollar. USD per USD is exactly 1 and is provided as a currency identity.
+S(t) is Country 2 currency units per one unit of Country 1 currency. For UK → USA, this is US dollars per pound sterling. USD per USD is exactly 1 and is provided as a currency identity.
 
 P1(t) and P2(t) are monthly all-items price indexes. For the Euro area, the app uses IMF all-items HICP when the CPI-labelled series is unavailable; this is labelled in the app and recorded in the CSV.
 
@@ -119,7 +120,7 @@ Open the local URL printed by Streamlit. Choose two countries and select Load da
 4. Select your repository and branch, and set the main file path to app.py.
 5. In Advanced settings, select Python 3.12.
 6. Deploy. Streamlit installs requirements.txt automatically.
-7. Open the app, load USA → UK, and check the chart and CSV. Use the app's sharing controls to set access and copy its URL.
+7. Open the app, load UK → USA, and check the chart and CSV. Use the app's sharing controls to set access and copy its URL.
 8. Add the deployed URL near the top of this README.
 
 Public IMF requests worked without an API key during validation. If your IMF access requires one, add the following in Streamlit's Secrets settings, not in the repository:
@@ -141,7 +142,7 @@ For local use, the same value can be supplied through the IMF_API_KEY environmen
 Optional live connection check from a terminal:
 
 ```bash
-python app.py --check-live --country1 USA --country2 GBR --start 1976-01 --end 2025-12
+python app.py --check-live --country1 GBR --country2 USA --start 1976-01 --end 2025-12
 ```
 
 This prints coverage, the sample mean RER, and the mean real index. A successful nonempty real index should average approximately 100.
@@ -151,3 +152,4 @@ Implementation references:
 - [Streamlit secrets management](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/secrets-management)
 
 END README CONTENT
+
