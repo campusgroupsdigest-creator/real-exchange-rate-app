@@ -374,7 +374,7 @@ class IMFClient:
 
 
 
-def load_pair(client: IMFClient, country1: str = "USA", country2: str = "GBR", *,
+def load_pair(client: IMFClient, country1: str = "GBR", country2: str = "USA", *,
               start: str = EARLIEST_MONTH, end: str | None = None,
               refresh: bool = False) -> PairData:
     """Load only the selected economies, joining on an unfilled monthly grid."""
@@ -619,11 +619,10 @@ def run_app(client: IMFClient | None = None) -> None:
                        initial_sidebar_state="expanded")
     st.markdown(
         "<style>.block-container{max-width:1350px;padding-top:2.1rem;"
-        "padding-bottom:2rem}div[data-testid='stMetricValue']{font-weight:400}"
+        "padding-bottom:2rem}"
         "div[data-testid='stSidebar'] h2{font-size:1.05rem}</style>",
         unsafe_allow_html=True,
     )
-    st.caption("MONTHLY · BILATERAL · IMF")
     st.title("Real Exchange Rate")
     st.write("Compare nominal exchange rates and movements in relative prices.")
 
@@ -658,10 +657,10 @@ def run_app(client: IMFClient | None = None) -> None:
         st.header("Choose countries")
         with st.form("countries", border=False):
             c1 = st.selectbox("Country 1", options,
-                              index=options.index("USA") if "USA" in options else 0,
+                              index=options.index("GBR") if "GBR" in options else 0,
                               format_func=lambda code: f"{names[code]} ({code})", key="country1")
             c2 = st.selectbox("Country 2", options,
-                              index=options.index("GBR") if "GBR" in options else 0,
+                              index=options.index("USA") if "USA" in options else 0,
                               format_func=lambda code: f"{names[code]} ({code})", key="country2")
             submitted = st.form_submit_button("Load data", type="primary", width="stretch")
 
@@ -732,8 +731,7 @@ def run_app(client: IMFClient | None = None) -> None:
         st.info("The chart shows the loaded pair. Select Load data to apply the new country selection.")
     st.subheader(f"{loaded_names.get(pair.country1, pair.country1)} → "
                  f"{loaded_names.get(pair.country2, pair.country2)}")
-    st.caption(f"{display_month(start)} – {display_month(end)} · "
-               f"S = {currency_name(pair, 2)} per 1 {currency_name(pair, 1)}")
+    st.caption(f"{display_month(start)} – {display_month(end)}")
     if month(start) > month(end):
         st.error("Start month must be no later than end month.")
         st.stop()
@@ -757,18 +755,7 @@ def run_app(client: IMFClient | None = None) -> None:
         st.caption("Euro-area prices use IMF's all-items Harmonised Index of Consumer Prices (HICP).")
     frame = result.observations
     unit = f"{currency_name(pair, 2)} per {currency_name(pair, 1)}"
-    real = frame.loc[frame["valid_rer"]]
     nominal = frame.loc[frame["nominal_s"].notna()]
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.metric("Latest real index", f"{real['real_index'].iloc[-1]:.1f}" if len(real) else "—")
-        st.caption("Sample average = 100" + (f" · {display_month(real.index[-1])}" if len(real) else ""))
-    with col2:
-        st.metric("Latest nominal rate", f"{nominal['nominal_s'].iloc[-1]:.6g}" if len(nominal) else "—")
-        st.caption(unit + (f" · {display_month(nominal.index[-1])}" if len(nominal) else ""))
-    with col3:
-        st.metric("Valid months", f"{result.valid_months:,}")
-        st.caption(f"{result.valid_months:,} of {result.total_months:,} selected months")
     st.divider()
     heading, controls = st.columns([2, 1])
     with heading:
@@ -789,9 +776,6 @@ def run_app(client: IMFClient | None = None) -> None:
     if result.valid_months:
         st.caption(f"Valid real observations: {display_month(result.first_valid)} – "
                    f"{display_month(result.last_valid)}. Gaps are not filled.")
-    if result.valid_months < result.total_months:
-        st.caption(f"{result.total_months - result.valid_months:,} months excluded from the real benchmark "
-                   "because a required input or calculation is unavailable or invalid.")
 
     st.divider()
     info, action = st.columns([3, 1])
@@ -846,8 +830,8 @@ def run_app(client: IMFClient | None = None) -> None:
 def connection_check() -> None:
     parser = argparse.ArgumentParser(description="Check the live IMF retrieval and RER calculations.")
     parser.add_argument("--check-live", action="store_true")
-    parser.add_argument("--country1", default="USA")
-    parser.add_argument("--country2", default="GBR")
+    parser.add_argument("--country1", default="GBR")
+    parser.add_argument("--country2", default="USA")
     parser.add_argument("--start", default=EARLIEST_MONTH)
     parser.add_argument("--end", default=None)
     args = parser.parse_args()
